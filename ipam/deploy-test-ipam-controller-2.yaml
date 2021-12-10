@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: "2021-12-10T01:34:43Z"
+  generation: 1
+  labels:
+    name: test-ipam-controller-2
+  name: test-ipam-controller-2
+  namespace: kube-system
+  resourceVersion: "5329955"
+  uid: 6fd469d7-dd00-4d9f-a1c4-f3b5fde25965
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: test-ipam-controller-2
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: test-ipam-controller-2
+    spec:
+      containers:
+      - args:
+        - --orchestration
+        - kubernetes
+        - --ip-range
+        - '{"Dev":"10.8.3.21-10.8.3.30","Test":"10.8.3.31-10.8.3.40","Production":"10.8.3.41-10.8.3.50",
+          "Default":"10.8.3.51-10.8.3.60" } '
+        - --log-level
+        - DEBUG
+        command:
+        - /app/bin/f5-ipam-controller
+        image: f5networks/f5-ipam-controller:0.1.5
+        imagePullPolicy: IfNotPresent
+        name: test-ipam-controller-2
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /app/ipamdb
+          name: fic-volume
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1200
+        runAsGroup: 1200
+        runAsUser: 1200
+      serviceAccount: bigip-controller
+      serviceAccountName: bigip-controller
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: fic-volume
+        persistentVolumeClaim:
+          claimName: fic-volume-claim
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2021-12-10T01:34:47Z"
+    lastUpdateTime: "2021-12-10T01:34:47Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2021-12-10T01:34:43Z"
+    lastUpdateTime: "2021-12-10T01:34:47Z"
+    message: ReplicaSet "test-ipam-controller-2-8975b4cb8" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 1
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
